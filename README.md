@@ -2,7 +2,7 @@
 
 A command-line client for [Soliloquy](https://github.com/octoman90/soliloquy), a word-of-the-day service for learning unusual, archaic, literary, poetic, formal and rarely used English words.
 
-![](promo_pic.png)
+![](.github/promo_pic.png)
 
 ## Dependency installation
 
