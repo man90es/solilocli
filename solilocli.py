@@ -64,7 +64,7 @@ if __name__ == "__main__":
 	else:
 		p = {"ts": timestamp}
 		h = {"Accept": "text/plain"}
-		r = requests.get(url=args.e, params=p, headers=h)
+		r = requests.get(url=args.e, params=p, headers=h, timeout=3)
 
 		print_row(list(csv.reader([r.text], delimiter="|"))[0], args.d)
 
