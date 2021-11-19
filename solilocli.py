@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import argparse
-import csv
+import json
 import requests
 from datetime import date, datetime
 from pathlib import Path
@@ -19,10 +19,12 @@ def print_row(row, dateFmt):
 		print("\r" + "Today is", date_str)
 	pass
 
-	word = cmdTags.BOLD + row[0] + cmdTags.END
-	pos = "(" + row[1] + ")"
-	definition = row[2]
-	print("Word of the day:", word, pos, "—", definition, "\n")
+	word = cmdTags.BOLD + row["word"] + cmdTags.END
+	transcription = row["transcription"]
+	pos = "(" + row["partOfSpeech"] + ")"
+	definition = row["meaning"]
+
+	print("Word of the day:", word, transcription, pos, "—", definition, "\n")
 
 
 def get_timestamp():
@@ -52,23 +54,23 @@ def parse_args():
 if __name__ == "__main__":
 	timestamp = get_timestamp()
 	args = parse_args()
-	cache = Path("/tmp/wod-cache-" + str(timestamp))
+	cache = Path("/tmp/wod-cache-" + str(timestamp) + ".json")
 	use_cache = not args.n and cache.is_file()
 
 	# Print string from cache if it's allowed and exists
 	if (use_cache):
-		with open(cache, "r") as csvfile:
-			print_row(list(csv.reader(csvfile, delimiter="|"))[0], args.d)
+		with open(cache, "r") as cache_file:
+			print_row(json.load(cache_file), args.d)
 
 	# Request a string from the server
 	else:
 		p = {"ts": timestamp}
-		h = {"Accept": "text/plain"}
+		h = {"Accept": "application/json"}
 		r = requests.get(url=args.e, params=p, headers=h, timeout=3)
 
-		print_row(list(csv.reader([r.text], delimiter="|"))[0], args.d)
+		print_row(json.loads(r.text), args.d)
 
 		# Write cache
 		if (not args.n):
-			with open(cache, "w") as csvfile:
-				csvfile.write(r.text)
+			with open(cache, "w") as cache_file:
+				cache_file.write(r.text)
